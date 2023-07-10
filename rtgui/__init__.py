@@ -12,7 +12,7 @@ from mpl_toolkits.mplot3d import Axes3D  # <-- Note the capitalization!
 
 
 class CheckControl(tk.Frame):
-    def __init__(self, parent, title, names, cmd=None, color=['red'], defaultVal=None, vertical=True, offset=0):
+    def __init__(self, parent, title, names, cmd=None, color=['red'], defaultVal=None, vertical=True, offset=0, **kwargs):
         """
         creates n checkboxes cluster, where n=len(names)
 
@@ -33,7 +33,7 @@ class CheckControl(tk.Frame):
         :param offset: offset for the corresponding row or column depending on vertical flag
         :type offset: int
         """
-        tk.Frame.__init__(self, parent)
+        super(CheckControl, self).__init__(parent, **kwargs)
         self.parent = parent
         self.titleLabel = ttk.Label(self, text=title)
         j = 0
@@ -81,7 +81,7 @@ class CheckControl(tk.Frame):
 
 
 class ConsoleFrame(tk.Frame):
-    def __init__(self, parent, nLines=5, parseCMD=None):
+    def __init__(self, parent, nLines=5, parseCMD=None, **kwargs):
         """
         Creates a console to print strings
         :param parent: tk.Frame to use as parent
@@ -91,7 +91,7 @@ class ConsoleFrame(tk.Frame):
         :param parseCMD: Function to use to parse the message
         :type parseCMD: function
         """
-        tk.Frame.__init__(self, parent)
+        super(ConsoleFrame, self).__init__(parent, **kwargs)
         self.parseCMD = parseCMD
         self.nLines = nLines
         self.consoleVar = tk.StringVar()
@@ -134,7 +134,7 @@ class ConsoleFrame(tk.Frame):
 
 class PlotPanel(tk.Frame):
     def __init__(self, parent, title, titles, names, plotColor, timestamp, allValsList, color=None, number2Plot=500,
-                 shareAxis=None, showTime=False, useScale=True, figsize=(5, 2), useCheckFn=False):
+                 shareAxis=None, showTime=False, useScale=True, figsize=(5, 2), useCheckFn=False, **kwargs):
         """
         This widget has checkboxes with variables and a matplot figure the label goes to the left
         :param parent: parent frome
@@ -166,8 +166,7 @@ class PlotPanel(tk.Frame):
         :param useCheckFn: Function for the check control
         :type useCheckFn: function
         """
-
-        tk.Frame.__init__(self, parent)
+        super(PlotPanel, self).__init__(parent, **kwargs)
         self.title = title
         self.useScale = useScale
         self.showTime = showTime
@@ -359,7 +358,7 @@ class PlotPanelTimer(tk.Frame):
 class PlotPanelPandas(PlotPanel):
     def __init__(self, parent, title, titles, names, plotColor, timestamp, allValsPandas, color=None,
                  number2Plot=500, shareAxis=None, showTime=False, useScale=True, multiplier=10,
-                 timerFrame=None):
+                 timerFrame=None, **kwargs):
         """
         This widget has checkboxes with variables and a matplot figure the label goes to the left
         :param parent: parent frome
@@ -393,7 +392,7 @@ class PlotPanelPandas(PlotPanel):
         """
         super(PlotPanelPandas, self).__init__(self, parent, title, titles, names, plotColor, timestamp, allValsPandas,
                                               color=color, number2Plot=number2Plot, shareAxis=shareAxis,
-                                              showTime=showTime, useScale=useScale)
+                                              showTime=showTime, useScale=useScale, **kwargs)
         self.button = ButtonPanel(self, [['Reset Scale']], [[self.resetScale]])
         self.button.pack()
         self.maxValsAux = None
@@ -497,7 +496,7 @@ class PlotPanelPandas(PlotPanel):
 
 class PlotPanel3D(tk.Frame):
     def __init__(self, parent, title, titles, names, plotColor, angleValsList, figsize=(5, 5), color=None,
-                 rotationOrder='ZYX', degrees=False):
+                 rotationOrder='ZYX', degrees=False, **kwargs):
         """
         This widget create a 3D axes and plots a coordinates system rotation given euler angles
         :param parent: parent frame
@@ -520,8 +519,7 @@ class PlotPanel3D(tk.Frame):
         :param degrees: If true angleValList is in degrees and not radians
         :type degrees: bool
         """
-
-        tk.Frame.__init__(self, parent)
+        super(PlotPanel3D, self).__init__(parent, **kwargs)
         self._rotationOrder = rotationOrder
         self._degrees = degrees
         self.all = angleValsList
@@ -583,7 +581,7 @@ class PlotPanel3D(tk.Frame):
 
 class PlotPanel3DPandas(tk.Frame):
     def __init__(self, parent, title, titles, names, plotColor, allValsPandas, angle_column_names,
-                 figsize=(5, 5), color=None, rotationOrder='ZYX', degrees=False):
+                 figsize=(5, 5), color=None, rotationOrder='ZYX', degrees=False, **kwargs):
         """
         This widget create a 3D axes and plots a coordinates system rotation given euler angles
         :param parent: parent frame
@@ -608,9 +606,7 @@ class PlotPanel3DPandas(tk.Frame):
         :param degrees: If true angleValList is in degrees and not radians
         :type degrees: bool
         """
-        # this widget has checkboxes with variables and a matplot figure
-        # the label goes to the left
-        tk.Frame.__init__(self, parent)
+        super(PlotPanel3DPandas, self).__init__(parent, **kwargs)
         self._rotationOrder = rotationOrder
         self._degrees = degrees
         self._angle_column_names = angle_column_names
@@ -673,7 +669,7 @@ class PlotPanel3DPandas(tk.Frame):
 
 class InputWithButton(tk.Frame):
     def __init__(self, parent, label, buttonLabel, buttonCmd, browseTitle, browseFiletypes, defaultVal='',
-                 dialogType=0):
+                 dialogType=0, **kwargs):
         """
         This widget creates a file browser widget with a text field, a browse button, and a custom button
         :param parent: parent frame
@@ -693,7 +689,7 @@ class InputWithButton(tk.Frame):
         :param dialogType: use 0 for askopenfilename, 1 for asksaveasfilename, 2 for askdirectory
         :type dialogType: int
         """
-        tk.Frame.__init__(self, parent)
+        super(InputWithButton, self).__init__(parent, **kwargs)
         self._dialogType = dialogType
         tk.Label(self, text=label, width=10).grid(row=0, column=0)
         self._browseTitle = browseTitle
@@ -747,7 +743,7 @@ class InputWithButton(tk.Frame):
 
 
 class ButtonPanel(tk.Frame):
-    def __init__(self, parent, labels, cmds, width=20):
+    def __init__(self, parent, labels, cmds, width=20, **kwargs):
         """
         Creates a group of buttons
         :param parent: parent frame
@@ -760,7 +756,7 @@ class ButtonPanel(tk.Frame):
         :param width: width of the buttons
         :type width: int
         """
-        tk.Frame.__init__(self, parent)
+        super(ButtonPanel, self).__init__(parent, **kwargs)
         self.buttons = {}
         for row, (ls, cs) in enumerate(zip(labels, cmds)):
             for col, (l, c) in enumerate(zip(ls, cs)):
@@ -786,7 +782,7 @@ class ButtonPanel(tk.Frame):
 
 
 class StringInputs(tk.Frame):
-    def __init__(self, parent, names, vertical=True, defaultVals=None, dtype=np.int, process_function=None):
+    def __init__(self, parent, names, vertical=True, defaultVals=None, dtype=np.int, process_function=None, **kwargs):
         """
         Creates a widget with an array of string inputs
         :param parent: Parent frame
@@ -802,7 +798,7 @@ class StringInputs(tk.Frame):
         :param process_function: function to use to process the string
         :type process_function: function
         """
-        tk.Frame.__init__(self, parent)
+        super(StringInputs, self).__init__(parent, **kwargs)
         # self.root = tk.Toplevel(self)
         self.vals = None
         self.valR = []
