@@ -782,7 +782,7 @@ class ButtonPanel(tk.Frame):
 
 
 class StringInputs(tk.Frame):
-    def __init__(self, parent, names, vertical=True, defaultVals=None, dtype=np.int, process_function=None, **kwargs):
+    def __init__(self, parent, names, vertical=True, defaultVals=None, dtype=int, process_function=None, **kwargs):
         """
         Creates a widget with an array of string inputs
         :param parent: Parent frame
