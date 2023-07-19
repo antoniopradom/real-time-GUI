@@ -390,7 +390,7 @@ class PlotPanelPandas(PlotPanel):
         :param timerFrame: timerFrame to use to display the time
         :type timerFrame: PlotPanelTimer
         """
-        super(PlotPanelPandas, self).__init__(self, parent, title, titles, names, plotColor, timestamp, allValsPandas,
+        super(PlotPanelPandas, self).__init__(parent, title, titles, names, plotColor, timestamp, allValsPandas,
                                               color=color, number2Plot=number2Plot, shareAxis=shareAxis,
                                               showTime=showTime, useScale=useScale, **kwargs)
         self.button = ButtonPanel(self, [['Reset Scale']], [[self.resetScale]])
@@ -622,7 +622,7 @@ class PlotPanel3DPandas(tk.Frame):
         self.axis = Axes3D(self.f)
         self.plotColor = plotColor
         for t, n, c in zip(titles, names, self.plotColor):
-            self.checks.append(CheckControl(self.checkFrame, t, n, self.axis, color=c, cmd=self.plotControlFromChecks))
+            self.checks.append(CheckControl(self.checkFrame, t, n, color=c, cmd=self.plotControlFromChecks))
             # self.checks[-1].grid(row=0,column=len(self.checks))
             self.checks[-1].pack(side=tk.LEFT)
 
