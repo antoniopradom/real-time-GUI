@@ -52,7 +52,7 @@ class CheckControl(tk.Frame):
             dV = [0] * len(names)
         else:
             if len(defaultVal) is not len(names):
-                if len(defaultVal) is 1:
+                if len(defaultVal) == 1:
                     dV = defaultVal * len(names)
                 else:
                     warnings.warn('Default values should be 1 or equal to the number of names')
@@ -96,10 +96,10 @@ class ConsoleFrame(tk.Frame):
         self.nLines = nLines
         self.consoleVar = tk.StringVar()
         self.consoleList = []
-        tk.Label(self, text='Console').pack(fill=tk.BOTH)
+        tk.Label(self, text='Console').pack(side=tk.TOP)
         self.console = tk.Message(self, textvariable=self.consoleVar, relief=tk.SUNKEN)
-        self.console.pack()
-        tk.Button(self, text='Clear', command=self.clearConsole).pack()
+        self.console.pack(expand=tk.YES, side=tk.TOP)
+        tk.Button(self, text='Clear', command=self.clearConsole).pack(expand=tk.YES, side=tk.TOP)
 
     def __append2console(self, text):
         self.consoleList.append(text)
@@ -137,7 +137,7 @@ class PlotPanel(tk.Frame):
                  shareAxis=None, showTime=False, useScale=True, figsize=(5, 2), useCheckFn=False, **kwargs):
         """
         This widget has checkboxes with variables and a matplot figure the label goes to the left
-        :param parent: parent frome
+        :param parent: parent frame
         :type parent: tk.Frame
         :param title: Title of the widget
         :type title: str
@@ -393,14 +393,29 @@ class PlotPanelPandas(PlotPanel):
         super(PlotPanelPandas, self).__init__(parent, title, titles, names, plotColor, timestamp, allValsPandas,
                                               color=color, number2Plot=number2Plot, shareAxis=shareAxis,
                                               showTime=showTime, useScale=useScale, **kwargs)
-        self.button = ButtonPanel(self, [['Reset Scale']], [[self.resetScale]])
-        self.button.pack()
+        scale_frame = tk.Frame(self)
+        scale_frame.pack(fill=tk.BOTH, expand=tk.YES)
+        # self.button = ButtonPanel(scale_frame, [['Reset Scale']], [[self.resetScale]])
+        self.button = tk.Button(scale_frame, text='Reset Scale', command=self.resetScale)
+        self.button.pack(side=tk.LEFT, fill=tk.BOTH)
+        self._check_normal = CheckControl(scale_frame, "", ['Normalize'], self._normalize_option, color=['white'],
+                                          defaultVal=[useScale])
+        self._check_normal.pack(side=tk.LEFT)
         self.maxValsAux = None
         self.minValsAux = None
         self.dt = 0
         self.multiplier = multiplier
         self.counter = multiplier
         self.timerFrame = timerFrame
+        self._normalize_option()
+
+    def _normalize_option(self):
+        self.useScale = self._check_normal.getAllValues()[0]
+        if self.useScale:
+            self.button.configure(state='normal')
+        else:
+            self.button.configure(state='disabled')
+
 
     def plotControlFromChecks(self):
         warnings.warn('Please do not use this funciton with plotPanelPandas')
@@ -422,7 +437,7 @@ class PlotPanelPandas(PlotPanel):
         :type preprocess: function
         """
         # this function will plot all the values from all
-        if self.all.shape[0] is 0:
+        if self.all.shape[0] == 0:
             return
         if self.counter != 0:
             self.counter -= 1
@@ -563,7 +578,7 @@ class PlotPanel3D(tk.Frame):
             for v, c1 in zip(vals, col):
                 if v == 1:
                     # Get the values of rotation
-                    if len(self.all[i][0]) is 0:
+                    if len(self.all[i][0]) == 0:
                         self.systs[i].rotateAndPlotSystem(H=self.Hs[i], clearAx=False)
                         continue
                     # self.all is a list of list with [rx, ry, rz]
@@ -652,7 +667,7 @@ class PlotPanel3DPandas(tk.Frame):
             for v, c1 in zip(vals, col):
                 if v == 1:
                     # Get the values of rotation
-                    if self.all[i].shape[0] is 0:
+                    if self.all[i].shape[0] == 0:
                         self.systs[i].rotateAndPlotSystem(H=self.Hs[i], clearAx=False)
                         continue
                     eu = self.all.loc[self._angle_column_names].values[-1]
@@ -733,9 +748,9 @@ class InputWithButton(tk.Frame):
         Error, Warn, Good
         :type typeE: str
         """
-        if typeE is 'Error':
+        if typeE == 'Error':
             c = 'red'
-        elif typeE is 'Warn':
+        elif typeE == 'Warn':
             c = 'yellow'
         else:
             c = 'green'
@@ -810,7 +825,7 @@ class StringInputs(tk.Frame):
             dV = [''] * len(names)
         else:
             if len(defaultVals) is not len(names):
-                if len(defaultVals) is 1:
+                if len(defaultVals) == 1:
                     dV = defaultVals * len(names)
                 else:
                     warnings.warn('Default values should be 1 or equal to the number of names')
