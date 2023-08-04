@@ -216,7 +216,7 @@ class PlotPanel(tk.Frame):
         # self.canvas._tkcanvas.grid()
         self.canvas._tkcanvas.pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True)
 
-    def plotControlFromChecks(self):
+    def plotControlFromChecks(self, t_in_ms=False):
         """
         This function plots all the values that have an active checkbox
         """
@@ -226,10 +226,14 @@ class PlotPanel(tk.Frame):
         s = self.s
         i = 0
         if self.showTime:
-            if type(self.timestamp[0]) is list:
-                t = self.timestamp[0][-1] / 1000.0
+            if t_in_ms:
+                ms_scale = 1000.0
             else:
-                t = self.timestamp[-1] / 1000.0
+                ms_scale = 1.0
+            if type(self.timestamp[0]) is list:
+                t = self.timestamp[0][-1] / ms_scale
+            else:
+                t = self.timestamp[-1] / ms_scale
             self.consoleVar.set(self.title + '\n %.1fs' % t)
         for ch, col in zip(self.checks, self.plotColor):
             vals = ch.getAllValues()
@@ -237,10 +241,10 @@ class PlotPanel(tk.Frame):
                 if v == 1:
                     if type(self.timestamp[0]) is list:
 
-                        t = np.array(self.timestamp[i][-s:]) / 1000.0
+                        t = np.array(self.timestamp[i][-s:]) / ms_scale
                         # print(t.shape)
                     else:
-                        t = np.array(self.timestamp[-s:]) / 1000.0
+                        t = np.array(self.timestamp[-s:]) / ms_scale
                     y = np.array(self.all[i])
                     if y.size > t.size:
                         y = y[:t.size]
@@ -266,7 +270,7 @@ class PlotPanel(tk.Frame):
             self.axis.set_ylim(-0.1, 1.1)
         self.canvas.draw()
 
-    def plotControlFromChecksTime(self, tV, extraT=2):
+    def plotControlFromChecksTime(self, tV, extraT=2, t_in_ms=False):
         """
         This function plots all the values that have an active checkbox and display the timestamp
         :param tV: time to show in seconds
@@ -280,11 +284,15 @@ class PlotPanel(tk.Frame):
         self.axis.clear()
         i = 0
         if self.showTime:
+            if t_in_ms:
+                ms_scale = 1000.0
+            else:
+                ms_scale = 1.0
             if type(self.timestamp[0]) is list:
-                t = self.timestamp[0][-1] / 1000.0
+                t = self.timestamp[0][-1] / ms_scale
                 # print(t.shape)
             else:
-                t = self.timestamp[-1] / 1000.0
+                t = self.timestamp[-1] / ms_scale
             self.consoleVar.set(self.title + '\n %.1fs' % t)
         # t = np.array(t1) / 1000
         for ch, col in zip(self.checks, self.plotColor):
@@ -426,7 +434,7 @@ class PlotPanelPandas(PlotPanel):
         """
         self.maxValsAux = None
 
-    def plotControlFromChecksTime(self, tV, extraT=2.0, preprocess=None):
+    def plotControlFromChecksTime(self, tV, extraT=2.0, preprocess=None, t_in_ms=False):
         """
         This function plots all the values that have an active checkbox and display the timestamp
         :param tV: time to show in seconds
@@ -447,19 +455,23 @@ class PlotPanelPandas(PlotPanel):
         # i = 0
 
         # def _plotThread(self, tV, extraT, preprocess):
-        dt = 1000.0 / np.diff(self.all.index.values).mean()
+        if t_in_ms:
+            ms_scale = 1000.0
+        else:
+            ms_scale = 1.0
+        dt = ms_scale / np.diff(self.all.index.values).mean()
         if np.isnan(dt):
             return
         self.dt = dt
         if self.showTime:
-            t = self.all.index[-1] / 1000.0
+            t = self.all.index[-1] / ms_scale
             # print(self.all.columns)
             s_val = self.all['sync'].values[-1] == 1
             self.consoleVar.set(self.title + '\n %.1fs\n%.1fHz\n Sync: %d' % (t, dt, s_val))
             if self.timerFrame is not None:
                 self.timerFrame.setNewTime(t)
-        vals = np.array([ch.getAllValues() for ch in self.checks]).flatten()
-        if np.all(vals == 0):
+        vals = [ch.getAllValues() for ch in self.checks]
+        if all(v == 0 for vv in vals for v in vv):
             return
         self.axis.cla()
 
@@ -488,7 +500,7 @@ class PlotPanelPandas(PlotPanel):
             windowVals = (windowVals - self.minValsAux) / (divAux)
         # print(dt)
         # print(windowVals.shape[0])
-        windowVals.index /= 1000.0
+        windowVals.index /= ms_scale
         for ch, col, colNames in zip(self.checks, self.plotColor, self.names):
             vals = ch.getAllValues()
             for v, c1, na in zip(vals, col, colNames):

@@ -105,7 +105,7 @@ class receiveProto(object):
         while e.is_set():
             for j in range(self.q.qsize()):
                 data = self.q.get()
-                self._parseData(data, qSize=self.q.qsize())
+                self._parseData(data)
                 self.q.task_done()
                 if j > self.maxQSize:
                     # flush the queue
@@ -119,7 +119,7 @@ class receiveProto(object):
         :return:
         """
         self.rec = True
-        self.reOpenSocket()
+        # self.reOpenSocket()
         self.rec1 = threading.Event()
         self.rec1.set()
         self.t1 = threading.Thread(target=self.__receiveData, args=[self.rec1], daemon=True)
