@@ -12,7 +12,7 @@ def requirements_filter(fd):
     return list(filter(filter_lines, fd.read().split('\n')))
 
 
-VERSION = '0.0.4'
+VERSION = '0.0.5'
 DESCRIPTION = 'Python package for signal plotting using tk'
 LONG_DESCRIPTION = 'Python package for signal plotting using tk with real time capabilities'
 with open('requirements.txt', 'r') as fd:
